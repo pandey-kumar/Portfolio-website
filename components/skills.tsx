@@ -16,6 +16,10 @@ const skills = [
     category: "Tools & Others",
     items: ["Git", "GitHub", "VS Code", "Figma", "Docker", "CI/CD", "Vercel", "Postman"],
   },
+  {
+    category: "Soft skills",
+    items: ["communication","adaptablity","Team-Work"],
+  },
 ]
 
 // Skill proficiency data with fixed percentages
