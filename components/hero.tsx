@@ -62,7 +62,7 @@ export default function Hero() {
       className="relative min-h-screen flex flex-col items-center justify-center px-4 py-20"
       style={{ opacity, scale, y }}
     >
-      <div className="container mx-auto flex flex-col lg:flex-row items-center justify-between gap-20 ml-20">
+      <div className="container mx-auto flex flex-col lg:flex-row items-center justify-between gap-20 ml-5">
         <motion.div
           className="flex-1 text-center lg:text-left"
           initial={{ opacity: 0, x: -50 }}
@@ -139,7 +139,7 @@ export default function Hero() {
               <div className="w-full h-full relative">
                 {/* Using objectPosition to focus on the face area of the tall portrait */}
                 <Image
-                  src="/myimage.png?height=400&width=400"
+                  src="/myphoto2.png?height=400&width=400"
                   alt="Shubham Pandey"
                   fill
                   className="object-cover object-[center_top]"

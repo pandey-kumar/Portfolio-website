@@ -49,14 +49,29 @@ export default function About() {
 
           <motion.div variants={itemVariants} className="glass-effect rounded-xl p-6 md:p-8 mb-12">
             <div className="flex flex-col md:flex-row gap-8">
-                  <div className="relative z-10 rounded-xl overflow-hidden border-2 border-cyan-500">
-                    <Image
-                      src="/awardimage.png?height=300&width=300"
-                      alt="About Me"
-                      width={300}
-                      height={300}
-                      className="object-cover"
+                  <div className="relative z-10">
+                    <motion.div
+                      className="absolute -inset-1 rounded-xl bg-gradient-to-r from-neon-purple to-neon-blue opacity-70 blur-xl"
+                      animate={{
+                        opacity: [0.5, 0.8, 0.5],
+                        scale: [0.98, 1.01, 0.98],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        repeatType: "reverse",
+                        ease: "easeInOut"
+                      }}
                     />
+                    <div className="relative z-10 rounded-xl overflow-hidden border-2 border-cyan-500">
+                      <Image
+                        src="/awardimage.png?height=300&width=300"
+                        alt="About Me"
+                        width={300}
+                        height={300}
+                        className="object-cover"
+                      />
+                    </div>
                   </div>
 
                   <div className="flex-1">

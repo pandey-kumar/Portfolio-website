@@ -5,8 +5,10 @@ import type React from "react"
 import { useRef, useState } from "react"
 import { motion, useInView } from "framer-motion"
 import { Mail, Phone, MapPin, Send, Github, Linkedin, Twitter } from "lucide-react"
+import emailjs from '@emailjs/browser'
 
 export default function Contact() {
+  const formRef = useRef<HTMLFormElement>(null)
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: false, amount: 0.2 })
   const [formState, setFormState] = useState({
@@ -14,6 +16,11 @@ export default function Contact() {
     email: "",
     message: "",
   })
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitStatus, setSubmitStatus] = useState<{
+    success?: boolean;
+    message?: string;
+  }>({})
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -42,14 +49,49 @@ export default function Contact() {
     })
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission logic here
-    console.log(formState)
-    // Reset form
-    setFormState({ name: "", email: "", message: "" })
-    // Show success message
-    alert("Message sent successfully!")
+    setIsSubmitting(true)
+    setSubmitStatus({})
+    
+    // EmailJS integration
+    // You need to sign up at https://www.emailjs.com/ and get your Service ID, Template ID, and Public Key
+    // Add these values in the .env.local file as:
+    // NEXT_PUBLIC_EMAILJS_SERVICE_ID=your_service_id
+    // NEXT_PUBLIC_EMAILJS_TEMPLATE_ID=your_template_id
+    // NEXT_PUBLIC_EMAILJS_PUBLIC_KEY=your_public_key
+    
+    try {
+      if (!formRef.current) return
+      
+      const result = await emailjs.sendForm(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || '',
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || '',
+        formRef.current,
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY || ''
+      )
+      
+      if (result.text === 'OK') {
+        setSubmitStatus({ 
+          success: true, 
+          message: "Message sent successfully! I'll get back to you soon." 
+        })
+        setFormState({ name: "", email: "", message: "" })
+      } else {
+        setSubmitStatus({ 
+          success: false, 
+          message: "Failed to send message. Please try again." 
+        })
+      }
+    } catch (error) {
+      console.error('Error sending email:', error)
+      setSubmitStatus({ 
+        success: false, 
+        message: "An error occurred. Please try again later." 
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -234,7 +276,7 @@ export default function Contact() {
             </motion.div>
 
             <motion.div variants={itemVariants}>
-              <form onSubmit={handleSubmit} className="glass-effect rounded-xl p-6 md:p-8">
+              <form ref={formRef} onSubmit={handleSubmit} className="glass-effect rounded-xl p-6 md:p-8">
                 <h3 className="text-lg font-semibold text-white mb-6">Send Me a Message</h3>
 
                 <div className="space-y-4">
@@ -245,7 +287,7 @@ export default function Contact() {
                     <input
                       type="text"
                       id="name"
-                      name="name"
+                      name="from_name" // For EmailJS template
                       value={formState.name}
                       onChange={handleChange}
                       required
@@ -260,7 +302,7 @@ export default function Contact() {
                     <input
                       type="email"
                       id="email"
-                      name="email"
+                      name="reply_to" // For EmailJS template
                       value={formState.email}
                       onChange={handleChange}
                       required
@@ -274,7 +316,7 @@ export default function Contact() {
                     </label>
                     <textarea
                       id="message"
-                      name="message"
+                      name="message" // For EmailJS template
                       value={formState.message}
                       onChange={handleChange}
                       required
@@ -282,13 +324,32 @@ export default function Contact() {
                       className="w-full px-4 py-2 rounded-lg bg-space-accent border border-neon-purple/20 text-white focus:border-neon-purple focus:outline-none focus:ring-1 focus:ring-neon-purple"
                     />
                   </div>
+                  
+                  {/* Hidden field for EmailJS template */}
+                  <input type="hidden" name="to_name" value="Shubham Pandey" />
+
+                  {submitStatus.message && (
+                    <div className={`p-3 rounded-lg ${submitStatus.success ? 'bg-green-900/60 text-green-200' : 'bg-red-900/60 text-red-200'}`}>
+                      {submitStatus.message}
+                    </div>
+                  )}
 
                   <button
                     type="submit"
-                    className="w-full py-3 px-6 rounded-lg bg-gradient-to-r from-neon-purple to-neon-blue text-white font-medium flex items-center justify-center hover:shadow-lg hover:shadow-neon-purple/20 transition-all"
+                    disabled={isSubmitting}
+                    className={`w-full py-3 px-6 rounded-lg bg-gradient-to-r from-neon-purple to-neon-blue text-white font-medium flex items-center justify-center transition-all ${isSubmitting ? 'opacity-70 cursor-not-allowed' : 'hover:shadow-lg hover:shadow-neon-purple/20'}`}
                   >
-                    <Send size={18} className="mr-2" />
-                    Send Message
+                    {isSubmitting ? (
+                      <>
+                        <span className="animate-spin mr-2">⟳</span>
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Send size={18} className="mr-2" />
+                        Send Message
+                      </>
+                    )}
                   </button>
                 </div>
               </form>

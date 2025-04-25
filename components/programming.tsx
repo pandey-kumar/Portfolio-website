@@ -1,8 +1,8 @@
 "use client"
 
-import { useRef } from "react"
-import { motion, useInView } from "framer-motion"
-import { Code, GitBranch, GitPullRequest, Star } from "lucide-react"
+import { useRef, useState, useEffect } from "react"
+import { motion, useInView, useAnimationControls } from "framer-motion"
+import { Code, GitBranch, GitPullRequest, Star, Award, Hash, TrendingUp } from "lucide-react"
 
 const programmingStats = [
   { label: "Repositories", value: "25+", icon: Code },
@@ -12,18 +12,72 @@ const programmingStats = [
 ]
 
 const languages = [
-  { name: "c++", percentage: 90 },
-  { name: "JavaScript", percentage: 40 },
-  { name: "TypeScript", percentage: 25 },
-  { name: "HTML/CSS", percentage: 15 },
-  { name: "Python", percentage: 10 },
-  { name: "Java", percentage: 5 },
-  { name: "Other", percentage: 5 },
+  { name: "c++", percentage: 95 },
+  { name: "JavaScript", percentage: 92 },
+  { name: "TypeScript", percentage: 90 },
+  { name: "HTML/CSS", percentage: 88 },
+  { name: "Python", percentage: 80 },
+  { name: "Java", percentage: 75 },
+  { name: "Other", percentage: 10 },
+]
+
+const platforms = [
+  {
+    name: "LeetCode",
+    username: "shubhampandey777",
+    icon: Hash,
+    link: "https://leetcode.com/u/shubhampandey777/",
+    color: "from-yellow-400 to-yellow-600"
+  },
+  {
+    name: "CodeChef",
+    username: "pandey-kumar",
+    icon: Award,
+    link: "https://www.codechef.com/users/dynamicshubham",
+    color: "from-brown-400 to-brown-600"
+  },
+  {
+    name: "Codeforces",
+    username: "pandey-kumar",
+    icon: TrendingUp,
+    link: "https://codeforces.com/profile/PandeyKumar",
+    color: "from-red-500 to-red-700"
+  },
 ]
 
 export default function Programming() {
   const ref = useRef<HTMLDivElement>(null)
   const isInView = useInView(ref, { once: false, amount: 0.2 })
+  const [counters, setCounters] = useState(languages.map(() => 0))
+  
+  useEffect(() => {
+    if (isInView) {
+      const timers = languages.map((lang, index) => {
+        return setTimeout(() => {
+          const interval = setInterval(() => {
+            setCounters(prev => {
+              const newCounters = [...prev]
+              if (newCounters[index] < lang.percentage) {
+                newCounters[index] += 1
+                return newCounters
+              } else {
+                clearInterval(interval)
+                return prev
+              }
+            })
+          }, 15) // Adjust speed as needed
+          
+          return interval
+        }, 500 + index * 100)
+      })
+      
+      return () => {
+        timers.forEach(timer => clearTimeout(timer))
+      }
+    } else {
+      setCounters(languages.map(() => 0))
+    }
+  }, [isInView])
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -114,22 +168,72 @@ export default function Programming() {
                       animate={isInView ? { opacity: 1 } : { opacity: 0 }}
                       transition={{ duration: 0.5, delay: 0.5 + index * 0.1 }}
                     >
-                      {lang.percentage}%
+                      {counters[index]}%
                     </motion.span>
                   </div>
                   <div className="h-2 w-full bg-space-accent rounded-full overflow-hidden">
                     <motion.div
-                      className="h-full bg-gradient-to-r from-neon-purple to-neon-blue rounded-full"
+                      className="h-full bg-gradient-to-r from-neon-purple to-neon-blue rounded-full relative"
                       initial={{ width: 0 }}
                       animate={isInView ? { width: `${lang.percentage}%` } : { width: 0 }}
                       transition={{
                         duration: 1.5,
                         delay: 0.5 + index * 0.1,
-                        ease: [0.25, 0.1, 0.25, 1], // Custom easing for a more dynamic feel
+                        ease: "easeInOut",
                       }}
-                    />
+                    >
+                      <motion.div 
+                        className="absolute right-0 top-0 h-full w-2 bg-white rounded-full"
+                        animate={{
+                          opacity: [0.2, 0.8, 0.2],
+                          scale: [0.8, 1.2, 0.8],
+                        }}
+                        transition={{
+                          duration: 1.5,
+                          repeat: Infinity,
+                          repeatType: "reverse",
+                        }}
+                      />
+                    </motion.div>
                   </div>
                 </div>
+              ))}
+            </div>
+          </motion.div>
+
+          <motion.div variants={itemVariants} className="mb-12">
+            <h3 className="text-xl font-semibold mb-6 text-center">Coding Platforms</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {platforms.map((platform) => (
+                <motion.a
+                  key={platform.name}
+                  href={platform.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="glass-effect rounded-xl p-6 text-center card-hover-effect flex flex-col items-center"
+                  whileHover={{
+                    scale: 1.03,
+                    boxShadow: "0 0 25px rgba(123, 31, 162, 0.5)",
+                    borderColor: "rgba(123, 31, 162, 0.8)",
+                  }}
+                >
+                  <motion.div
+                    className={`flex justify-center mb-3 h-12 w-12 rounded-full items-center bg-gradient-to-r ${platform.color}`}
+                    animate={{
+                      y: [0, -5, 0],
+                      scale: [1, 1.1, 1],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Number.POSITIVE_INFINITY,
+                      repeatType: "reverse",
+                    }}
+                  >
+                    <platform.icon className="text-white" size={24} />
+                  </motion.div>
+                  <h3 className="text-xl font-bold text-white mb-1">{platform.name}</h3>
+                  <p className="text-gray-400 text-sm">@{platform.username}</p>
+                </motion.a>
               ))}
             </div>
           </motion.div>
