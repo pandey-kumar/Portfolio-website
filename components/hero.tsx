@@ -62,7 +62,7 @@ export default function Hero() {
       className="relative min-h-screen flex flex-col items-center justify-center px-4 py-20"
       style={{ opacity, scale, y }}
     >
-      <div className="container mx-auto flex flex-col lg:flex-row items-center justify-between gap-20 ml-5">
+      <div className="container mx-auto flex flex-col lg:flex-row items-center justify-between gap-20">
         <motion.div
           className="flex-1 text-center lg:text-left"
           initial={{ opacity: 0, x: -50 }}
