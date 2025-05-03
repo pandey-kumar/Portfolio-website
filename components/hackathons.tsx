@@ -16,7 +16,7 @@ const hackathons = [
     image: "/hackathon/codeAhaunt.png?height=300&width=500",
   },
   {
-    title: "DevFest Jalandhar 2004",
+    title: "DevFest Jalandhar",
     position: "Gold medal 1st place",
     date: "December 2024",
     location: "Jalandhar, punjab",
