@@ -40,8 +40,8 @@ const projects = [
     description: "A utility app for conversion of text into diffrent formats",
     image: "/projects/textutil.png?height=400&width=600",
     tags: ["reactjs","nodejs"],
-    github: "https://vercel.com/shubhams-projects-7bf47dbe/text-utils-app",
-    demo: "#",
+    github: "https://github.com/pandey-kumar/text_utils_app",
+    demo: "https://vercel.com/shubhams-projects-7bf47dbe/text-utils-app",
     featured: false,
   },
   {
